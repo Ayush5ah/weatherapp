@@ -1,44 +1,54 @@
-const url = 'https://weather-api-by-any-city.p.rapidapi.com/weather/London';
+const apiKey = "f152517b04msh301d9c32dfd22f1p16c09ejsnbffa23402277";
+const apiHost = "weatherapi-com.p.rapidapi.com";
+const urlBase = `https://${apiHost}/current.json`;
+
 const options = {
-	method: 'GET',
-	headers: {
-		'x-rapidapi-key': 'f152517b04msh301d9c32dfd22f1p16c09ejsnbffa23402277',
-		'x-rapidapi-host': 'weather-api-by-any-city.p.rapidapi.com'
-	}
+    method: 'GET',
+    headers: {
+        'x-rapidapi-key': apiKey,
+        'x-rapidapi-host': apiHost
+    }
 };
 
-try {
-	const response = await fetch(url, options);
-	const result = await response.text();
-	console.log(result);
-} catch (error) {
-	console.error(error);
+async function fetchData(city) {
+    try {
+        const response = await fetch(`${urlBase}?q=${city}`, options);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(error);
+    }
 }
-const getWeather=(city)=>{
-    cityName.innerHTML=city
-    fetch('https://weather-api-by-any-city.p.rapidapi.com/weather/?city='+city, options)
-    .then(response => response.json())
-    .then(response => {
-        console.log(response)
-        temp.innerHTML = response.temp_c
-        temp2.innerHTML = response.temp_c
-        feels_like.innerHTML = response.feelslike_c
-        humidity.innerHTML = response.humidity
-        humidity2.innerHTML = response.humidity
-        min_temp.innerHTML = response.windchill_c
-        max_temp.innerHTML = response.heatindex_c
-        wind_speed.innerHTML = response.wind_kph
-        wind_speed2.innerHTML = response.wind_kph
-        wind_degrees.innerHTML = response.wind_degrees
-        sunrise.innerHTML = response.is_day
-        sunset.innerHTML = response.is_day
-    } )
 
-    .catch(err => console.error(err));
+const getWeather = async (city) => {
+    try {
+        const data = await fetchData(city);
+        console.log(data);
+        
+        if (data) {
+            cityName.innerHTML = city;
+            temp.innerHTML = data.current.temp_c;
+            temp2.innerHTML = data.current.temp_c;
+            feels_like.innerHTML = data.current.feelslike_c;
+            humidity.innerHTML = data.current.humidity;
+            humidity2.innerHTML = data.current.humidity;
+            min_temp.innerHTML = data.current.windchill_c;
+            max_temp.innerHTML = data.current.heatindex_c;
+            wind_speed.innerHTML = data.current.wind_kph;
+            wind_speed2.innerHTML = data.current.wind_kph;
+            wind_degrees.innerHTML = data.current.wind_degrees;
+            sunrise.innerHTML = "5:02 AM";
+            sunset.innerHTML = "6:23 PM";
+        }
+    } catch (err) {
+        console.error(err);
+    }
 }
-submit.addEventListener("click", (e)=>{
-    e.preventDefault()
-    getWeather(city.value)
-})
-getWeather("Kolkata")
 
+submit.addEventListener("click", (e) => {
+    e.preventDefault();
+    getWeather(city.value);
+});
+
+// Example to get weather for Kolkata on initial load
+getWeather("Kolkata");
